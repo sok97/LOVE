@@ -38,11 +38,11 @@
         .buttons {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             width: 100%;
             max-width: 400px;
+            position: relative;
         }
 
         button {
@@ -52,7 +52,7 @@
             border: none;
             border-radius: 25px;
             transition: all 0.3s ease;
-            min-width: 100px;
+            min-width: 120px;
             font-family: 'Georgia', serif;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -79,7 +79,6 @@
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
             color: white;
             flex: 1;
-            min-width: 120px;
         }
 
         #yes:hover {
@@ -95,7 +94,7 @@
         #no {
             background: linear-gradient(45deg, #6c5ce7, #5f3dc4);
             color: white;
-            position: absolute;
+            flex: 1;
             transition: all 0.3s ease;
             z-index: 10;
         }
@@ -104,6 +103,13 @@
             background: linear-gradient(45deg, #5f3dc4, #4c63d2);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(95, 61, 196, 0.4);
+        }
+
+        /* When No button becomes absolute positioned, it will move away */
+        #no.moving {
+            position: absolute;
+            flex: none;
+            min-width: 100px;
         }
 
         /* Love letter styles */
@@ -300,7 +306,7 @@
 
             button {
                 padding: 12px 20px;
-                min-width: 90px;
+                min-width: 100px;
             }
 
             .envelope {
@@ -312,7 +318,7 @@
                 padding: 15px;
             }
 
-            #no {
+            #no.moving {
                 min-width: 80px;
                 padding: 10px 15px;
                 font-size: 1rem;
@@ -330,13 +336,12 @@
             }
 
             .buttons {
-                flex-direction: column;
-                gap: 20px;
+                gap: 12px;
             }
 
-            #yes {
-                width: 100%;
-                max-width: 200px;
+            button {
+                min-width: 90px;
+                padding: 12px 18px;
             }
         }
 
@@ -422,13 +427,7 @@
             
             noButton.style.left = `${newX}px`;
             noButton.style.top = `${newY}px`;
-        }
-
-        // Initialize "No" button position
-        function initNoButton() {
-            setTimeout(() => {
-                placeNoButton();
-            }, 100);
+            noButton.classList.add('moving');
         }
 
         // Create floating hearts animation
@@ -496,13 +495,19 @@
             document.querySelector('h1').style.display = 'block';
             document.querySelector('.buttons').style.display = 'flex';
             
+            // Reset No button position
+            noButton.classList.remove('moving');
+            noButton.style.position = '';
+            noButton.style.left = '';
+            noButton.style.top = '';
+            
             // Clear hearts
             heartsContainer.innerHTML = '';
         });
 
         // Handle window resize
         window.addEventListener('resize', () => {
-            if (noButton.style.position === 'absolute') {
+            if (noButton.classList.contains('moving')) {
                 setTimeout(placeNoButton, 100);
             }
         });
@@ -513,9 +518,6 @@
                 e.preventDefault();
             }
         });
-
-        // Initialize
-        initNoButton();
 
         // Add some initial hearts for ambiance
         setTimeout(() => {
